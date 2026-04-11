@@ -1,0 +1,25 @@
+# Configuração do Netlify para DDS Abril Verde AR
+# HTTPS é automático no Netlify → câmera funciona em qualquer celular
+
+[build]
+  command   = "npm run build"
+  publish   = "dist"
+
+# Headers necessários para o MindAR funcionar corretamente
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Embedder-Policy = "unsafe-none"
+    Cross-Origin-Opener-Policy   = "unsafe-none"
+    Cross-Origin-Resource-Policy = "cross-origin"
+
+# Cache longo para arquivos pesados (MindAR, A-Frame, targets.mind)
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/targets.mind"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

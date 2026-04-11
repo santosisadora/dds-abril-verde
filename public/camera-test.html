@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teste de Câmera</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #00ff88;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 16px;
+      padding: 20px;
+    }
+    h1 { font-size: 16px; letter-spacing: 2px; text-align: center; }
+    video {
+      width: 100%;
+      max-width: 400px;
+      border: 2px solid #00ff88;
+      border-radius: 8px;
+      background: #001;
+      display: none;
+    }
+    button {
+      background: transparent;
+      border: 2px solid #00ff88;
+      color: #00ff88;
+      font-family: monospace;
+      font-size: 15px;
+      padding: 14px 28px;
+      cursor: pointer;
+      border-radius: 4px;
+      letter-spacing: 2px;
+    }
+    #log {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(0,0,0,0.8);
+      border: 1px solid #00ff88;
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 11px;
+      line-height: 1.8;
+      min-height: 80px;
+    }
+    .ok  { color: #00ff88; }
+    .err { color: #ff4444; }
+    .inf { color: #aaa; }
+  </style>
+</head>
+<body>
+  <h1>🔬 TESTE DE CÂMERA</h1>
+  <video id="cam" autoplay playsinline muted></video>
+  <button id="btn">▶ TESTAR CÂMERA</button>
+  <div id="log"><p class="inf">Toque no botão para testar...</p></div>
+
+  <script>
+    const btn = document.getElementById('btn');
+    const vid = document.getElementById('cam');
+    const log = document.getElementById('log');
+
+    function line(msg, cls = 'inf') {
+      const p = document.createElement('p');
+      p.className = cls;
+      p.textContent = msg;
+      log.appendChild(p);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Testando...';
+      log.innerHTML = '';
+
+      // Info do contexto
+      line('Protocolo: ' + location.protocol);
+      line('Host: ' + location.host);
+      line('Secure context: ' + window.isSecureContext);
+      line('getUserMedia disponível: ' + !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia));
+
+      if (!window.isSecureContext) {
+        line('⚠ CONTEXTO NÃO SEGURO — câmera bloqueada pelo browser', 'err');
+        line('Solução: acesse com https://', 'err');
+        btn.textContent = 'Não Seguro';
+        return;
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        line('❌ getUserMedia não disponível neste browser', 'err');
+        btn.textContent = 'Não Suportado';
+        return;
+      }
+
+      try {
+        line('Solicitando câmera traseira...');
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false
+        });
+        line('✔ Câmera obtida! Tracks: ' + stream.getVideoTracks().length, 'ok');
+        const track = stream.getVideoTracks()[0];
+        line('Label: ' + track.label, 'ok');
+
+        vid.srcObject = stream;
+        vid.style.display = 'block';
+        await vid.play();
+        line('✔ Vídeo reproduzindo!', 'ok');
+        btn.textContent = '✔ FUNCIONOU!';
+        btn.style.borderColor = '#00ff88';
+      } catch (err) {
+        line('❌ ERRO: ' + err.name, 'err');
+        line('Mensagem: ' + err.message, 'err');
+        btn.textContent = 'Erro — Toque novamente';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+/* ============================================================
+   DDS ABRIL VERDE 2026 — CSS
+   Garante câmera 100% da tela, sem bordas brancas ou scroll
+   ============================================================ */
+
+/* ── Reset Global ─────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Consolas', 'Courier New', monospace;
+}
+
+/* ── A-Frame / MindAR — deixe que gerenciem o canvas ─────── */
+/* NÃO sobrescrever canvas com object-fit (não funciona em
+   canvas) nem position:fixed (quebra o Three.js/MindAR).    */
+
+canvas {
+  display: block;
+}
+
+/* O vídeo injetado pelo MindAR precisa cobrir a tela — EXCLUIR o video do HUD */
+video:not(#dds-video) {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
+}
+
+/* Cena A-Frame ocupa todo o viewport */
+a-scene {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* ── UI de Inicio (Toque para Iniciar) ───────────────────── */
+#start-ui {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  background: rgba(0, 10, 5, 0.92);
+}
+
+.start-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.start-ring {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 255, 136, 0.6);
+  box-shadow:
+    0 0 30px rgba(0, 255, 136, 0.4),
+    0 0 80px rgba(0, 255, 136, 0.15),
+    inset 0 0 30px rgba(0, 255, 136, 0.08);
+  animation: scan-pulse 2.5s ease-in-out infinite;
+  position: absolute;
+}
+
+.start-ring.ring-2 {
+  width: 240px;
+  height: 240px;
+  border-color: rgba(0, 255, 136, 0.2);
+  animation: scan-pulse 2.5s ease-in-out infinite reverse;
+}
+
+.start-label {
+  color: #00ff88;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(0, 255, 136, 0.8);
+  margin-top: 140px;
+}
+
+#start-btn {
+  background: transparent;
+  border: 2px solid #00ff88;
+  color: #00ff88;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 14px 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow:
+    0 0 20px rgba(0, 255, 136, 0.4),
+    inset 0 0 20px rgba(0, 255, 136, 0.05);
+  transition: all 0.2s ease;
+  animation: btn-glow 2s ease-in-out infinite;
+}
+
+#start-btn:active {
+  background: rgba(0, 255, 136, 0.15);
+  transform: scale(0.97);
+}
+
+#start-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@keyframes btn-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.4), inset 0 0 20px rgba(0, 255, 136, 0.05); }
+  50%       { box-shadow: 0 0 40px rgba(0, 255, 136, 0.7), inset 0 0 20px rgba(0, 255, 136, 0.12); }
+}
+
+.start-sub {
+  color: rgba(144, 238, 144, 0.6);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+#debug-panel {
+  margin-top: 12px;
+  width: 90vw;
+  max-height: 180px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+#debug-panel p {
+  margin: 0;
+  font-family: 'Consolas', monospace;
+}
+
+/* ── UI de Scanning Customizada ───────────────────────────── */
+#scanning-ui {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+#scanning-ui.hidden {
+  opacity: 0;
+}
+
+.scanning-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Anel de scanlineatorio animado */
+.scan-ring {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 255, 136, 0.7);
+  box-shadow:
+    0 0 20px rgba(0, 255, 136, 0.5),
+    0 0 60px rgba(0, 255, 136, 0.2),
+    inset 0 0 20px rgba(0, 255, 136, 0.1);
+  animation: scan-pulse 2s ease-in-out infinite;
+}
+
+.scan-ring.ring-2 {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-color: rgba(0, 255, 136, 0.4);
+  animation: scan-pulse 2s ease-in-out infinite reverse;
+}
+
+@keyframes scan-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.5;
+  }
+}
+
+/* Linha de scan horizontal animada */
+.scanning-content::before {
+  content: '';
+  position: absolute;
+  width: 220px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 255, 136, 0.8) 50%,
+    transparent 100%
+  );
+  animation: scan-line 2.5s linear infinite;
+  border-radius: 2px;
+}
+
+@keyframes scan-line {
+  0%   { transform: translateY(-110px); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(110px); opacity: 0; }
+}
+
+.scan-text {
+  color: #00ff88;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(0, 255, 136, 0.9);
+  margin-top: 24px;
+}
+
+.scan-sub {
+  color: rgba(144, 238, 144, 0.7);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ── Cantos decorativos do frame scaner ───────────────────── */
+.scanning-content::after {
+  content: '';
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  background:
+    linear-gradient(to right, #00ff88 12px, transparent 12px) 0 0,
+    linear-gradient(to bottom, #00ff88 12px, transparent 12px) 0 0,
+    linear-gradient(to left, #00ff88 12px, transparent 12px) 100% 0,
+    linear-gradient(to bottom, #00ff88 12px, transparent 12px) 100% 0,
+    linear-gradient(to right, #00ff88 12px, transparent 12px) 0 100%,
+    linear-gradient(to top, #00ff88 12px, transparent 12px) 0 100%,
+    linear-gradient(to left, #00ff88 12px, transparent 12px) 100% 100%,
+    linear-gradient(to top, #00ff88 12px, transparent 12px) 100% 100%;
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  opacity: 0.8;
+}
+
+/* ── Controle de HUD (Áudio e Vídeo) ──────────────────────── */
+#controls-ui {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 20000 !important;
+  display: none; /* Só aparece quando o AR inicia */
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-end;
+}
+
+#audio-btn, #video-btn {
+  width: 54px !important;
+  height: 54px !important;
+  background: rgba(0, 77, 64, 0.75) !important; /* Verde Esmeralda Escuro */
+  border: 2px solid #00E676 !important; /* Verde Neon Vibrante */
+  border-radius: 50% !important;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.5) !important; /* Verde Menta Glow */
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #00E676 !important;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+#audio-btn:active, #video-btn:active {
+  transform: scale(0.9);
+  background: rgba(0, 230, 118, 0.3) !important;
+}
+
+#audio-btn svg, #video-btn svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+#audio-btn.muted {
+  border-color: rgba(0, 230, 118, 0.4) !important;
+  color: rgba(0, 230, 118, 0.4) !important;
+}
+
+/* ── Modal de Vídeo — Flutuando sobre a RA ───────────────── */
+#video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(0, 10, 5, 0.7); /* Fundo sutilmente esmeralda */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+
+.video-container {
+  position: relative;
+  width: 90vw;
+  max-width: 600px;
+  background: #000;
+  border: 2px solid #00E676; /* Verde Neon */
+  border-radius: 12px;
+  padding: 5px;
+  box-shadow: 0 0 45px rgba(0, 255, 204, 0.5); /* Mint Glow */
+}
+
+#dds-video {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 75vh;
+  display: block;
+  border-radius: 8px;
+  background: #000;
+  object-fit: contain !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+#video-close {
+  position: absolute;
+  top: -20px;
+  right: -5px;
+  width: 44px;
+  height: 44px;
+  background: #00E676; /* Verde Neon */
+  border: none;
+  color: #004D40; /* Texto em Esmeralda Escuro */
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px rgba(0, 255, 204, 0.6);
+  z-index: 10002;
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/* ── Suprimir elementos internos do A-Frame / MindAR ─────── */
+.a-loader-title,
+.a-enter-vr,
+.a-enter-ar,
+.a-orientation-modal {
+  display: none !important;
+}
