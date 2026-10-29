@@ -147,6 +147,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const quizRetryBtn     = document.getElementById('quiz-retry-btn');
   const quizDoneBtn      = document.getElementById('quiz-done-btn');
 
+  // Elementos do Cartaz / QR Code
+  const posterBtn        = document.getElementById('poster-btn');
+  const startPosterBtn   = document.getElementById('start-poster-btn');
+  const posterModal      = document.getElementById('poster-modal');
+  const posterClose      = document.getElementById('poster-close');
+
   function debug(msg, err) {
     err = err || false;
     console.log('[AR]', msg);
@@ -386,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Gestos de Touch & Mouse para girar e dar zoom no modelo 3D
   window.addEventListener('pointerdown', e => {
     if (!isEpiMode) return;
-    if (e.target.closest('#controls-ui, #epi-hud, #video-modal, #quiz-modal')) return;
+    if (e.target.closest('#controls-ui, #epi-hud, #video-modal, #quiz-modal, #poster-modal')) return;
     isDragging = true;
     prevX = e.clientX;
     prevY = e.clientY;
@@ -564,6 +570,27 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         showQuizResults();
       }
+    });
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // 5. Modal do Cartaz / Marcador com QR Code
+  // ───────────────────────────────────────────────────────────────────────────
+  function openPosterModal() {
+    if (posterModal) posterModal.style.display = 'flex';
+  }
+
+  if (posterBtn) {
+    posterBtn.addEventListener('click', openPosterModal);
+  }
+
+  if (startPosterBtn) {
+    startPosterBtn.addEventListener('click', openPosterModal);
+  }
+
+  if (posterClose) {
+    posterClose.addEventListener('click', () => {
+      posterModal.style.display = 'none';
     });
   }
 });

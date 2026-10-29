@@ -47,6 +47,16 @@
         <span id="quiz-score-pill" class="hud-badge" style="display:none">✓</span>
       </button>
 
+      <button id="poster-btn" class="hud-btn" title="Ver Cartaz & QR Code">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <span class="hud-badge">QR</span>
+      </button>
+
       <audio id="main-audio" src="/audio.m4a" loop preload="auto"></audio>
     </div>
 
@@ -121,6 +131,21 @@
       </div>
     </div>
 
+    <!-- Modal do Cartaz / Marcador com QR Code -->
+    <div id="poster-modal" style="display:none">
+      <div class="poster-container">
+        <button id="poster-close" title="Fechar Cartaz">&times;</button>
+        <div class="poster-header">
+          <span class="quiz-tag">MARCADOR OFICIAL DE RA • QR CODE ATIVO</span>
+        </div>
+        <img id="poster-img" src="/cartaz.png" alt="Cartaz Campanha Abril Verde 2026" />
+        <p class="poster-caption">Aponte a câmera de outro celular para este cartaz ou baixe para imprimir.</p>
+        <div class="poster-actions">
+          <a href="/cartaz.png" download="Cartaz-Abril-Verde-2026.png" class="poster-download-btn">&#11015; BAIXAR CARTAZ</a>
+        </div>
+      </div>
+    </div>
+
     <a-scene
       mindar-image="imageTargetSrc: /targets.mind; autoStart: false; uiLoading: no; uiError: no; uiScanning: no; filterMinCF: 0.001; filterBeta: 0.01; missTolerance: 25; warmupSteps: 8;"
       color-space="sRGB"
@@ -182,6 +207,7 @@
         <div class="start-ring ring-2"></div>
         <p class="start-label">DDS ABRIL VERDE 2026</p>
         <button id="start-btn">&#9654; TOQUE PARA INICIAR</button>
+        <button id="start-poster-btn" type="button">&#9638; VER CARTAZ / QR CODE</button>
         <p class="start-sub">Segurança na palma da mão</p>
       </div>
     </div>
