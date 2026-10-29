@@ -3,16 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>DDS Abril Verde 2026 | AR</title>
+    <meta name="theme-color" content="#004D40" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>DDS Abril Verde 2026 | AR Holográfico</title>
     <script src="/aframe.min.js"></script>
     <script src="/mindar-image-aframe.prod.js"></script>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
 
-    <!-- Controle de HUD (Áudio, Vídeo, 3D EPI e Quiz) — FIXO NO TOPO DO BODY -->
+    <!-- Banner Superior Dinâmico (Tema do DDS de Hoje via JSON) -->
+    <div id="dds-top-banner" style="display:none">
+      <div class="dds-banner-dot"></div>
+      <div class="dds-banner-info">
+        <span class="dds-banner-label">DDS DO DIA • <span id="dds-date-label">HOJE</span></span>
+        <strong id="dds-theme-title">Prevenção Ativa &amp; Inspeção Diária de Segurança</strong>
+      </div>
+      <button id="voice-msg-btn" type="button" title="Ouvir Voz do DDS do Dia">
+        &#128266; VOZ DO DIA
+      </button>
+    </div>
+
+    <!-- Controle de HUD Lateral Direito -->
     <div id="controls-ui">
-      <button id="audio-btn" class="hud-btn" title="Alternar som">
+      <button id="audio-btn" class="hud-btn" title="Alternar som / Mensagem do Dia">
         <svg id="icon-sound-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -28,6 +42,14 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="5 3 19 12 5 21 5 3"></polygon>
         </svg>
+      </button>
+
+      <button id="checklist-btn" class="hud-btn" title="Checklist Interativo e Presença DDS">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span id="checklist-pct-badge" class="hud-badge">0%</span>
       </button>
 
       <button id="epi-btn" class="hud-btn" title="Inspecionar EPIs em 3D">
@@ -47,7 +69,16 @@
         <span id="quiz-score-pill" class="hud-badge" style="display:none">✓</span>
       </button>
 
-      <button id="poster-btn" class="hud-btn" title="Ver Cartaz & QR Code">
+      <button id="desktop-mode-btn" class="hud-btn" title="Modo 3D Viewer / Laptop (Sem Marcador)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        <span class="hud-badge">PC</span>
+      </button>
+
+      <button id="poster-btn" class="hud-btn" title="Ver Cartaz, QR Code e Métricas">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7"></rect>
           <rect x="14" y="3" width="7" height="7"></rect>
@@ -75,8 +106,43 @@
           <button class="epi-tab" data-epi="2">Óculos</button>
         </div>
         <div class="epi-hint">
-          <span>&#8635; Arraste na tela para girar em 3D • Pinça para zoom</span>
+          <span>&#8635; Arraste na tela para girar em 3D • Pinça/Scroll para zoom</span>
           <button id="epi-reset-rot" type="button">Resetar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Checklist Interativo + Assinatura de Presença DDS -->
+    <div id="checklist-modal" style="display:none">
+      <div class="quiz-container">
+        <button id="checklist-close" title="Fechar Checklist">&times;</button>
+
+        <div class="quiz-header">
+          <span class="quiz-tag">CHECKLIST OPERACIONAL &amp; PRESENÇA</span>
+          <span id="checklist-progress-label">0 / 4 (0%)</span>
+        </div>
+        <div class="quiz-progress-bar">
+          <div id="checklist-progress-fill" style="width: 0%"></div>
+        </div>
+
+        <p class="checklist-sub">Toque nos itens abaixo após inspecionar seu posto e EPIs:</p>
+        <div id="checklist-items-container" class="checklist-list"></div>
+
+        <!-- Seção de Assinatura Digital / Check-in do DDS -->
+        <div id="checkin-section" class="checkin-box">
+          <h3 class="checkin-title">&#9989; Confirmar Presença no DDS de Hoje</h3>
+          <form id="dds-checkin-form" name="presenca-dds-abril-verde" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="presenca-dds-abril-verde" />
+            <div class="checkin-grid">
+              <input type="text" id="checkin-nome" name="colaborador" placeholder="Nome completo do colaborador" required />
+              <input type="text" id="checkin-matricula" name="matricula" placeholder="Matrícula / ID" required />
+              <input type="text" id="checkin-setor" name="setor" placeholder="Setor / Equipe (Ex: Floresta / Manutenção)" required />
+            </div>
+            <button type="submit" id="checkin-submit-btn" class="checkin-btn">
+              REGISTRAR PRESENÇA DIGITAL
+            </button>
+          </form>
+          <div id="checkin-success-msg" class="checkin-success" style="display:none"></div>
         </div>
       </div>
     </div>
@@ -120,7 +186,7 @@
             </svg>
           </div>
           <span class="quiz-tag" id="badge-rank">CERTIFICADO DE SEGURANÇA</span>
-          <h2 id="quiz-result-title">Guardiao Abril Verde</h2>
+          <h2 id="quiz-result-title">Guardião Abril Verde</h2>
           <p id="quiz-result-score" class="quiz-score-big">5 / 5 (100%)</p>
           <p id="quiz-result-msg" class="quiz-result-msg"></p>
           <div class="quiz-result-actions">
@@ -131,7 +197,7 @@
       </div>
     </div>
 
-    <!-- Modal do Cartaz / Marcador com QR Code -->
+    <!-- Modal do Cartaz / QR Code + Dashboard de Métricas Corporativas -->
     <div id="poster-modal" style="display:none">
       <div class="poster-container">
         <button id="poster-close" title="Fechar Cartaz">&times;</button>
@@ -139,9 +205,29 @@
           <span class="quiz-tag">MARCADOR OFICIAL DE RA • QR CODE ATIVO</span>
         </div>
         <img id="poster-img" src="/cartaz.png" alt="Cartaz Campanha Abril Verde 2026" />
-        <p class="poster-caption">Aponte a câmera de outro celular para este cartaz ou baixe para imprimir.</p>
+        <p class="poster-caption">Aponte a câmera do celular para este cartaz ou baixe para imprimir.</p>
         <div class="poster-actions">
           <a href="/cartaz.png" download="Cartaz-Abril-Verde-2026.png" class="poster-download-btn">&#11015; BAIXAR CARTAZ</a>
+          <button id="export-checkins-btn" type="button" class="poster-secondary-btn">&#128196; EXPORTAR PRESENÇAS (CSV)</button>
+        </div>
+
+        <!-- Mini Dashboard de Métricas de Engajamento -->
+        <div class="metrics-dashboard">
+          <span class="epi-tag">MÉTRICAS DE ENGAJAMENTO &amp; GESTÃO SST</span>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <strong id="metric-sessions">0</strong>
+              <span>Acessos / Leituras</span>
+            </div>
+            <div class="metric-item">
+              <strong id="metric-focus">0s</strong>
+              <span>Tempo em Foco AR</span>
+            </div>
+            <div class="metric-item">
+              <strong id="metric-checkins">0</strong>
+              <span>Presenças DDS</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -161,26 +247,61 @@
         <a-asset-item id="glb-capacete" src="/models/capacete.glb"></a-asset-item>
         <a-asset-item id="glb-protetor" src="/models/protetor.glb"></a-asset-item>
         <a-asset-item id="glb-oculos"   src="/models/oculos.glb"></a-asset-item>
+        <a-asset-item id="glb-laco"     src="/models/laco-3d.glb"></a-asset-item>
       </a-assets>
 
-      <a-light type="ambient" color="#B9F6CA" intensity="1.4"></a-light>
+      <a-light type="ambient" color="#B9F6CA" intensity="1.45"></a-light>
       <a-light type="directional" color="#ffffff" intensity="2.2" position="1 2 2"></a-light>
-      <a-light type="point" color="#00FFCC" intensity="1.5" position="-1 -1 1.5"></a-light>
+      <a-light type="point" color="#00FFCC" intensity="1.6" position="-1 -1 1.5"></a-light>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      <a-camera id="main-camera" position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 0">
-        <!-- CONTORNO NEON — Plano levemente maior atras do preto -->
-        <a-plane id="ar-border-plane" position="0 -0.10 -0.015" width="1.96" height="5.26" material="color: #00E676; opacity: 1.0; transparent: false; side: double"></a-plane>
-        
-        <!-- FUNDO PRETO TRANSLUCIDO -->
-        <a-plane id="ar-bg-plane" position="0 -0.10 -0.01" width="1.90" height="5.20" material="color: #000000; opacity: 0.78; transparent: true; side: double"></a-plane>
+      <a-entity id="ar-target-anchor" mindar-image-target="targetIndex: 0" dds-target-handler>
+        <!-- CONTORNO NEON COM PULSAÇÃO HOLOGRÁFICA (Glow Pulse) -->
+        <a-plane
+          id="ar-border-plane"
+          position="0 -0.10 -0.015"
+          width="1.96"
+          height="5.26"
+          material="color: #00E676; opacity: 0.85; transparent: true; side: double"
+          holo-glow-pulse="minOpacity: 0.48; maxOpacity: 0.92; speed: 2.4"
+        ></a-plane>
 
-        <!-- GRUPO 1: PAINEL CHECKLIST PADRÃO -->
+        <!-- FUNDO PRETO TRANSLÚCIDO -->
+        <a-plane
+          id="ar-bg-plane"
+          position="0 -0.10 -0.01"
+          width="1.90"
+          height="5.20"
+          material="color: #000c08; opacity: 0.78; transparent: true; side: double"
+        ></a-plane>
+
+        <!-- EFEITO DE VARREDURA BIOMÉTRICA (Scanline Effect) -->
+        <a-plane
+          id="ar-scanline"
+          width="1.86"
+          height="0.035"
+          position="0 1.8 0.035"
+          material="color: #00FFCC; shader: flat; opacity: 0.88; transparent: true; side: double"
+          holo-scanline="minY: -1.85; maxY: 1.85; speed: 1.45; zOffset: 0.035"
+        ></a-plane>
+
+        <!-- GRUPO 1: PAINEL CHECKLIST + SÍMBOLO PNG TRANSPARENTE + LAÇO 3D GLTF GIRATÓRIO -->
         <a-entity id="ar-checklist-group" visible="true">
-          <a-image src="#img-checklist" position="0 1.00 0" width="1.80" height="1.80" transparent="true"></a-image>
-          <a-image src="#img-simbolo" position="0 -0.70 0" width="1.70" height="1.70" transparent="true" opacity="0.98"></a-image>
-          <a-image src="#img-label" position="0 -1.72 0" width="1.80" height="0.38" transparent="true"></a-image>
+          <a-image src="#img-checklist" position="0 1.05 0" width="1.80" height="1.80" transparent="true"></a-image>
+
+          <!-- Modelo 3D GLTF do Laço Abril Verde + Anéis Holográficos girando sobre o eixo central -->
+          <a-entity
+            id="ar-laco-3d"
+            gltf-model="#glb-laco"
+            position="0 0.06 0.12"
+            scale="0.62 0.62 0.62"
+            holo-spin="speedDeg: 45"
+          ></a-entity>
+
+          <!-- Símbolo das Mãos com Canal Alpha Transparente -->
+          <a-image src="#img-simbolo" position="0 -0.78 0" width="1.68" height="1.68" transparent="true" alpha-test="0.05" opacity="0.98"></a-image>
+          <a-image src="#img-label" position="0 -1.78 0" width="1.80" height="0.38" transparent="true"></a-image>
         </a-entity>
 
         <!-- GRUPO 2: HOLOGRAMA E MODELOS 3D DE EPI (.GLB) -->
@@ -189,7 +310,7 @@
           <a-ring position="0 -0.65 -0.15" rotation="-70 0 0" radius-inner="0.52" radius-outer="0.60" material="color: #00E676; shader: flat; side: double; opacity: 0.85; transparent: true"></a-ring>
           <a-ring position="0 -0.65 -0.15" rotation="-70 0 0" radius-inner="0.32" radius-outer="0.36" material="color: #00FFCC; shader: flat; side: double; opacity: 0.6; transparent: true"></a-ring>
 
-          <!-- Container rotacionável pelo toque do usuário -->
+          <!-- Container rotacionável pelo toque/mouse do usuário -->
           <a-entity id="epi-rotator" rotation="15 0 0" scale="1.35 1.35 1.35">
             <a-entity id="model-capacete" gltf-model="#glb-capacete" visible="true" position="0 0 0"></a-entity>
             <a-entity id="model-protetor" gltf-model="#glb-protetor" visible="false" position="0 0 0"></a-entity>
@@ -206,9 +327,13 @@
         <div class="start-ring"></div>
         <div class="start-ring ring-2"></div>
         <p class="start-label">DDS ABRIL VERDE 2026</p>
-        <button id="start-btn">&#9654; TOQUE PARA INICIAR</button>
-        <button id="start-poster-btn" type="button">&#9638; VER CARTAZ / QR CODE</button>
-        <p class="start-sub">Segurança na palma da mão</p>
+        <p id="start-dynamic-theme" class="start-theme-pill">Carregando tema do DDS...</p>
+        <button id="start-btn">&#9654; INICIAR CÂMERA AR</button>
+        <div class="start-secondary-row">
+          <button id="start-desktop-btn" type="button">&#128187; MODO 3D / LAPTOP</button>
+          <button id="start-poster-btn" type="button">&#9638; CARTAZ / QR CODE</button>
+        </div>
+        <p class="start-sub">Segurança na palma da mão • Funciona Offline (PWA)</p>
       </div>
     </div>
 
@@ -218,7 +343,7 @@
         <div class="scan-ring"></div>
         <div class="scan-ring ring-2"></div>
         <p class="scan-text">Aponte para o marcador</p>
-        <p class="scan-sub">Encaixe o símbolo no centro</p>
+        <p class="scan-sub">Ou toque no botão [PC] à direita para Modo 3D sem marcador</p>
       </div>
     </div>
 

@@ -1,0 +1,18 @@
+{
+  "name": "DDS Abril Verde 2026 — WebAR",
+  "short_name": "Abril Verde AR",
+  "description": "Experiência WebAR Holográfica de Segurança do Trabalho — Campanha Abril Verde 2026",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000a05",
+  "theme_color": "#004D40",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

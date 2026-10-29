@@ -275,23 +275,131 @@ a-scene {
   opacity: 0.8;
 }
 
+/* ── Banner Superior Dinâmico (Tema do DDS do Dia) ───────── */
+#dds-top-banner {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  right: 84px;
+  z-index: 19000;
+  background: rgba(0, 28, 22, 0.86);
+  border: 1.5px solid #00E676;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 22px rgba(0, 255, 204, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dds-banner-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00E676;
+  box-shadow: 0 0 10px #00FFCC;
+  flex-shrink: 0;
+  animation: scan-pulse 1.6s infinite;
+}
+
+.dds-banner-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.dds-banner-label {
+  font-size: 9.5px;
+  color: #00FFCC;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+#dds-theme-title {
+  font-size: 12px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#voice-msg-btn {
+  background: #00E676;
+  color: #004D40;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 9px;
+  font-family: inherit;
+  font-size: 10.5px;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(0, 255, 204, 0.45);
+}
+
+#voice-msg-btn.speaking {
+  background: #00FFCC;
+  box-shadow: 0 0 20px #00FFCC;
+}
+
+.start-theme-pill {
+  color: #00FFCC;
+  background: rgba(0, 77, 64, 0.7);
+  border: 1px solid rgba(0, 230, 118, 0.5);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  max-width: 88vw;
+  text-align: center;
+}
+
+.start-secondary-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#start-desktop-btn {
+  background: rgba(0, 230, 118, 0.16);
+  border: 1.5px solid #00E676;
+  color: #00FFCC;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+#start-desktop-btn:hover, #start-desktop-btn:active {
+  background: #00E676;
+  color: #004D40;
+}
+
 /* ── Controle de HUD (Áudio, Vídeo, 3D EPI e Quiz) ────────── */
 #controls-ui {
   position: fixed !important;
-  top: 20px !important;
-  right: 20px !important;
+  top: 14px !important;
+  right: 16px !important;
   left: auto !important;
   z-index: 20000 !important;
   display: none; /* Só aparece quando o AR inicia */
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   align-items: flex-end;
 }
 
 .hud-btn {
   position: relative;
-  width: 54px !important;
-  height: 54px !important;
+  width: 48px !important;
+  height: 48px !important;
   background: rgba(0, 77, 64, 0.78) !important; /* Verde Esmeralda Escuro */
   border: 2px solid #00E676 !important; /* Verde Neon Vibrante */
   border-radius: 50% !important;
@@ -463,7 +571,7 @@ a-scene {
 }
 
 /* ── Modal de Vídeo — Flutuando sobre a RA ───────────────── */
-#video-modal, #quiz-modal, #poster-modal {
+#video-modal, #quiz-modal, #poster-modal, #checklist-modal {
   position: fixed;
   inset: 0;
   z-index: 10001;
@@ -499,7 +607,7 @@ a-scene {
   left: 0 !important;
 }
 
-#video-close, #quiz-close, #poster-close {
+#video-close, #quiz-close, #poster-close, #checklist-close {
   position: absolute;
   top: -18px;
   right: -8px;
@@ -517,6 +625,194 @@ a-scene {
   justify-content: center;
   box-shadow: 0 0 25px rgba(0, 255, 204, 0.6);
   z-index: 10002;
+}
+
+/* ── Checklist Clicável + Check-in de Presença DDS ───────── */
+.checklist-sub {
+  font-size: 12.5px;
+  color: #B9F6CA;
+  margin-bottom: 10px;
+}
+
+.checklist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.chk-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: rgba(0, 77, 64, 0.45);
+  border: 1.5px solid rgba(0, 230, 118, 0.4);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #B9F6CA;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chk-item-btn.checked {
+  background: rgba(0, 230, 118, 0.24);
+  border-color: #00FFCC;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 230, 118, 0.35);
+}
+
+.chk-box-indicator {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: 2px solid #00E676;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  flex-shrink: 0;
+  color: transparent;
+}
+
+.chk-item-btn.checked .chk-box-indicator {
+  background: #00E676;
+  color: #004D40;
+}
+
+.chk-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chk-item-cat {
+  font-size: 9.5px;
+  color: #00FFCC;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.chk-item-title {
+  font-size: 12.5px;
+  line-height: 1.3;
+}
+
+.checkin-box {
+  border-top: 1px solid rgba(0, 230, 118, 0.3);
+  padding-top: 14px;
+}
+
+.checkin-title {
+  font-size: 14px;
+  color: #00E676;
+  margin-bottom: 10px;
+}
+
+.checkin-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.checkin-grid input {
+  background: rgba(0, 18, 14, 0.9);
+  border: 1px solid rgba(0, 230, 118, 0.5);
+  border-radius: 6px;
+  padding: 9px 11px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12.5px;
+}
+
+.checkin-grid input:focus {
+  outline: none;
+  border-color: #00FFCC;
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+}
+
+.checkin-btn {
+  width: 100%;
+  background: #00E676;
+  color: #004D40;
+  border: none;
+  border-radius: 6px;
+  padding: 11px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 0 18px rgba(0, 255, 204, 0.45);
+}
+
+.checkin-success {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  background: rgba(0, 230, 118, 0.2);
+  border: 1px solid #00FFCC;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.poster-secondary-btn {
+  background: transparent;
+  border: 1.5px solid #00FFCC;
+  color: #00FFCC;
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.poster-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.metrics-dashboard {
+  border-top: 1px solid rgba(0, 230, 118, 0.25);
+  padding-top: 10px;
+  margin-top: 6px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.metric-item {
+  background: rgba(0, 77, 64, 0.55);
+  border: 1px solid rgba(0, 230, 118, 0.4);
+  border-radius: 8px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metric-item strong {
+  color: #00FFCC;
+  font-size: 16px;
+}
+
+.metric-item span {
+  font-size: 9.5px;
+  color: #B9F6CA;
 }
 
 #start-poster-btn {

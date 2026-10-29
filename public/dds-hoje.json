@@ -1,0 +1,108 @@
+{
+  "campanha": "DDS ABRIL VERDE 2026",
+  "dataAtualizacao": "2026-04-10",
+  "temaDoDia": "Prevenção Ativa & Inspeção Diária de Segurança",
+  "liderResponsavel": "SESMT / CIPA — Gestão da Floresta",
+  "mensagemVozUrl": "/audio.m4a",
+  "mensagemTextoGuiado": "Bom dia, equipe! No DDS de hoje da campanha Abril Verde, reforçamos que nenhum trabalho é tão urgente que não possa ser feito com segurança.Antes de iniciar sua atividade, confira seu capacete, óculos e protetor auricular, inspecione suas ferramentas e sinalize qualquer risco na área. A nossa cultura protege!",
+  "checklist": [
+    {
+      "id": "chk-epi",
+      "categoria": "EPI (NR-6)",
+      "titulo": "EPIs inspecionados e em uso correto (Capacete, Óculos, Abafador)",
+      "obrigatorio": true
+    },
+    {
+      "id": "chk-ferramentas",
+      "categoria": "FERRAMENTAS",
+      "titulo": "Ferramentas e equipamentos verificados antes da operação",
+      "obrigatorio": true
+    },
+    {
+      "id": "chk-area",
+      "categoria": "ÁREA E SINALIZAÇÃO",
+      "titulo": "Área de trabalho limpa, isolada e livre de condições inseguras",
+      "obrigatorio": true
+    },
+    {
+      "id": "chk-equipe",
+      "categoria": "COMUNICAÇÃO",
+      "titulo": "Riscos da atividade alinhados com a equipe no DDS de hoje",
+      "obrigatorio": true
+    }
+  ],
+  "epis3d": [
+    {
+      "id": "model-capacete",
+      "title": "Capacete de Segurança (Classe B)",
+      "desc": "Proteção craniana contra impactos de objetos em queda e choques elétricos. Inspecione a carneira, ajuste a jugular e verifique trincas antes do uso."
+    },
+    {
+      "id": "model-protetor",
+      "title": "Abafador de Ruídos Tipo Concha",
+      "desc": "Proteção auditiva em ambientes com pressão sonora elevada (NR-15). As almofadas devem vedar totalmente ao redor da orelha, sem folgas."
+    },
+    {
+      "id": "model-oculos",
+      "title": "Óculos de Proteção em Policarbonato",
+      "desc": "Proteção ocular contra projeção de partículas volantes, poeiras e radiação UV. Mantenha as lentes limpas e sem riscos para visão clara."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "1. Qual é o objetivo principal da campanha Abril Verde nas empresas?",
+      "options": [
+        "Aumentar a velocidade de produção mensal",
+        "Promover a cultura de prevenção de acidentes e doenças do trabalho",
+        "Substituir o uso de EPIs por treinamentos online",
+        "Realizar manutenção apenas em equipamentos elétricos"
+      ],
+      "correct": 1,
+      "explanation": "Correto! O Abril Verde conscientiza trabalhadores e gestores sobre saúde, segurança e prevenção de acidentes."
+    },
+    {
+      "question": "2. Segundo a NR-6, quando um EPI apresenta danos, trincas ou desgaste que comprometam a proteção, o que você deve fazer?",
+      "options": [
+        "Continuar usando até o final do mês",
+        "Tentar consertar com fita isolante ou cola",
+        "Comunicar imediatamente o setor responsável e solicitar a substituição",
+        "Emprestar o EPI de um colega de outro setor"
+      ],
+      "correct": 2,
+      "explanation": "Exato! Todo EPI danificado perde sua eficácia e deve ser substituído imediatamente."
+    },
+    {
+      "question": "3. Qual é o papel do Diálogo Diário de Segurança (DDS) antes do início das atividades?",
+      "options": [
+        "Alinhar os riscos da tarefa do dia e reforçar medidas preventivas em equipe",
+        "Apenas cumprir uma formalidade burocrática no papel",
+        "Avaliar o desempenho financeiro da semana",
+        "Dispensar a necessidade de inspeção das ferramentas"
+      ],
+      "correct": 0,
+      "explanation": "Perfeito! O DDS mantém o foco e a atenção da equipe nos riscos reais antes de começar o trabalho."
+    },
+    {
+      "question": "4. Ao identificar uma condição insegura (ex: piso escorregadio, cabo desencapado ou falta de sinalização), qual é a atitude correta?",
+      "options": [
+        "Ignorar se não for na sua bancada de trabalho",
+        "Interromper o risco se seguro, sinalizar a área e acionar a supervisão/SESMT",
+        "Esperar que a equipe do próximo turno resolva",
+        "Passar rapidamente pelo local sem avisar ninguém"
+      ],
+      "correct": 1,
+      "explanation": "Isso mesmo! Segurança é responsabilidade de todos: perceber o risco e agir evita acidentes graves."
+    },
+    {
+      "question": "5. Sobre a proteção auditiva e ocular (Abafador e Óculos de Segurança), qual afirmação está CORRETA?",
+      "options": [
+        "Só precisam ser usados quando o supervisor estiver olhando",
+        "Podem ser retirados durante operações rápidas de 1 minuto",
+        "Devem ser utilizados durante todo o tempo de exposição ao risco na área operacional",
+        "Óculos de grau comuns substituem os óculos de segurança padrão"
+      ],
+      "correct": 2,
+      "explanation": "Excelente! Acidentes acontecem em frações de segundo; a proteção deve ser contínua enquanto houver exposição ao risco."
+    }
+  ]
+}
